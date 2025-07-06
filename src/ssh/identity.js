@@ -1,5 +1,9 @@
 import { getPassword } from '../core/password.js'
 
+export function getIdentity(profile) {
+    return Buffer.from(getPassword(profile), 'base64').toString('utf8')
+}
+
 export default {
     command: 'identity <profile>',
     describe: 'Show SSH identity file for a profile',
@@ -10,12 +14,7 @@ export default {
         }),
     handler: argv => {
         try {
-            const base64Identity = getPassword(argv.profile)
-            const identityContent = Buffer.from(
-                base64Identity,
-                'base64'
-            ).toString('utf8')
-            process.stdout.write(identityContent)
+            process.stdout.write(getIdentity(argv.profile))
         } catch (err) {
             console.error(err.message)
             process.exit(1)

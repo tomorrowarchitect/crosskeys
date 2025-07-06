@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default {
-    command: 'key <profile>',
+    command: 'pubkey <profile>',
     describe: 'Show public key for a profile',
     builder: yargs =>
         yargs.positional('profile', {
