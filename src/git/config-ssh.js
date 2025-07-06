@@ -1,4 +1,5 @@
 import { spawnSync } from 'child_process'
+import fs from 'fs'
 
 export default {
     command: ['config-ssh <profile> <base_ssh_path>'],
@@ -34,25 +35,68 @@ export default {
         }
 
         if (argv.apply) {
-            const result = spawnSync(
+            // --- GIT CONFIG ---
+            // Set git insteadOf url
+            const urlSection = `${sshUser}@${argv.profile}.crosskeys:${sshPath}`
+            const gitUrlResult = spawnSync(
                 'git',
                 [
                     'config',
                     '--global',
-                    `credential.${argv.base_ssh_path}.helper`,
-                    `crosskeys ${argv.profile}`
+                    `url.${urlSection}.insteadOf`,
+                    argv.base_ssh_path
                 ],
                 { encoding: 'utf8' }
             )
-            if (result.error) {
-                console.error('Failed to apply config:', result.error.message)
-            } else if (result.status !== 0) {
-                console.error(
-                    'Failed to apply config:',
-                    result.stderr?.trim() || 'Unknown error'
-                )
+            if (gitUrlResult.error || gitUrlResult.status !== 0) {
+                const msg = gitUrlResult.error
+                    ? gitUrlResult.error.message
+                    : gitUrlResult.stderr?.trim() || 'Unknown error'
+                console.error('Failed to apply git insteadOf config:', msg)
             } else {
-                console.log('Config applied using git config.')
+                console.log('Git insteadOf URL config applied.')
+            }
+
+            // --- SSH CONFIG ---
+            const sshConfigPath = `${process.env.HOME}/.ssh/config`
+            const sshConfigEntry = `
+Host ${argv.profile}.crosskeys
+    HostName ${sshHost}
+    User ${sshUser}
+    IdentityFile ~/.crosskeys/identities/${argv.profile}
+    IdentitiesOnly yes
+    ProxyCommand ssh-exec-crosskeys %h %p ${argv.profile}
+`
+            let sshConfigContent = ''
+            try {
+                if (fs.existsSync(sshConfigPath)) {
+                    sshConfigContent = fs.readFileSync(sshConfigPath, 'utf8')
+                }
+            } catch (e) {
+                console.error('Failed to read SSH config:', e.message)
+            }
+            // Remove any existing Host section for this profile before appending
+            const hostPattern = new RegExp(
+                `(^|\\n)Host ${argv.profile}\\.crosskeys[\\s\\S]*?(?=\\nHost |$)`,
+                'g'
+            )
+            if (sshConfigContent.match(hostPattern)) {
+                try {
+                    sshConfigContent = sshConfigContent.replace(hostPattern, '')
+                    fs.writeFileSync(sshConfigPath, sshConfigContent, 'utf8')
+                    console.log('Old SSH config entry removed.')
+                } catch (e) {
+                    console.error(
+                        'Failed to remove old SSH config entry:',
+                        e.message
+                    )
+                }
+            }
+            try {
+                fs.appendFileSync(sshConfigPath, `\n${sshConfigEntry}`)
+                console.log('SSH config entry added.')
+            } catch (e) {
+                console.error('Failed to update SSH config:', e.message)
             }
         } else {
             console.log(`
