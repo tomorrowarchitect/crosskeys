@@ -1,6 +1,8 @@
 # crosskeys
 
-## 1. Basic Use Case: Managing Username/Password Pairs
+## Usage
+
+### 1. Basic Use Case: Managing Username/Password Pairs
 
 `crosskeys` lets you securely store and retrieve username/password pairs for any service. You can set, get, and unset credentials from the command line:
 
@@ -22,7 +24,7 @@ Credentials are stored securely and can be retrieved by profile name.
 
 ---
 
-## 2. Git Credential Manager for HTTP-based Git Operations
+### 2. Git Credential Manager for HTTP-based Git Operations
 
 You can use `crosskeys` as a credential helper for Git over HTTP/HTTPS. This allows Git to fetch credentials from your secure store automatically.
 
@@ -67,7 +69,7 @@ This will set up Git to use `crosskeys` as the credential helper for the specifi
 
 ---
 
-## 3. SSH Identities Manager for SSH-based Git Operations
+### 3. SSH Identities Manager for SSH-based Git Operations
 
 `crosskeys` can also manage SSH identities and automate SSH configuration for Git over SSH. This is useful for using different SSH keys per profile or host.
 
@@ -137,3 +139,11 @@ git clone git@github-work.crosskeys:org-name/repo.git
 ```
 
 and have Git/SSH automatically use the correct identity and configuration managed by `crosskeys`.
+
+---
+
+## FAQs
+
+**Q: Where is my credential stored?**
+
+A: In your macOS Keychain (this tool currently supports macOS only).
