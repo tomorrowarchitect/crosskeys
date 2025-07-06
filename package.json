@@ -1,7 +1,8 @@
 {
   "author": "",
   "bin": {
-    "crosskeys": "./src/index.js"
+    "crosskeys": "./src/index.js",
+    "git-credential-crosskeys": "./src/git-credential-helper.js"
   },
   "dependencies": {
     "node-fetch": "^3.3.2",
