@@ -138,12 +138,16 @@ You can then use URLs like:
 git clone git@github-work.crosskeys:org-name/repo.git
 ```
 
-and have Git/SSH automatically use the correct identity and configuration managed by `crosskeys`.
+Git and SSH will automatically use the correct identity and configuration managed by `crosskeys`.
 
 ---
 
 ## FAQs
 
-**Q: Where is my credential stored?**
+**Q: Where are my credentials stored?**
 
-A: In your macOS Keychain (this tool currently supports macOS only).
+A: Your credentials are stored in your macOS Keychain. (This tool currently supports macOS only.)
+
+**Q: Is there support for Windows and Linux?**
+
+A: Not yet. Currently, there is no support for Windows or Linux. Support may be added in the future if there is a need or demand.
