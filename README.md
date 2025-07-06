@@ -1,5 +1,15 @@
 # crosskeys
 
+## Installation
+
+This package is not yet published to npm. To install globally, use GitHub directly with npm:
+
+```sh
+npm install -g git+https://github.com/tomorrowarchitect/crosskeys.git
+```
+
+To upgrade, simply reinstall using the same command above.
+
 ## Usage
 
 ### 1. Basic Use Case: Managing Username/Password Pairs
