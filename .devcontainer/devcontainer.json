@@ -1,0 +1,27 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "esbenp.prettier-vscode",
+                "foxundermoon.shell-format",
+                "GitHub.copilot-chat",
+                "GitHub.copilot",
+                "ms-azuretools.vscode-docker",
+                "ms-playwright.playwright",
+                "ue.alphabetical-sorter"
+            ]
+        }
+    },
+    "postCreateCommand": "test -x ${containerWorkspaceFolder}/.devcontainer/bootstrap && ${containerWorkspaceFolder}/.devcontainer/bootstrap",
+    "remoteEnv": {
+        "DOTFILES_GIT_URL": "${localEnv:DEVCONTAINER_DOTFILES_GIT_URL}",
+        "GIT_AUTHOR_EMAIL": "${localEnv:DEVCONTAINER_GIT_AUTHOR_EMAIL}",
+        "GIT_AUTHOR_NAME": "${localEnv:DEVCONTAINER_GIT_AUTHOR_NAME}",
+        "GIT_COMMITTER_EMAIL": "${localEnv:DEVCONTAINER_GIT_COMMITTER_EMAIL}",
+        "GIT_COMMITTER_NAME": "${localEnv:DEVCONTAINER_GIT_COMMITTER_NAME}",
+        "OP_SERVICE_ACCOUNT_TOKEN": "${localEnv:DEVCONTAINER_OP_SERVICE_ACCOUNT_TOKEN}"
+    }
+}

@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Ensure ~/.gnupg exists and has correct permissions
+mkdir -p "$HOME/.gnupg"
+chmod 700 "$HOME/.gnupg"
+
+# Set up GPG environment variables
+export GPG_TTY="$(tty || true)"
+unset GPG_AGENT_INFO
+unset GPG_AGENT_SOCK
+
+kill_gpg_agent() {
+    if pgrep -x gpg-agent >/dev/null; then
+        echo "Killing existing gpg-agent..."
+        gpgconf --kill gpg-agent
+        sleep 1
+        if pgrep -x gpg-agent >/dev/null; then
+            echo "Force killing lingering gpg-agent..."
+            killall -9 gpg-agent || true
+            sleep 1
+        fi
+    fi
+}
+
+cleanup_gpg_sockets() {
+    local sockets=("$HOME/.gnupg/S.gpg-agent" "$HOME/.gnupg/S.gpg-agent.extra" "$HOME/.gnupg/S.keyboxd")
+    for sock in "${sockets[@]}"; do
+        if [[ -S "$sock" ]]; then
+            echo "Removing stale socket: $sock"
+            rm -f "$sock"
+        fi
+    done
+}
+
+start_gpg_agent() {
+    echo "Starting a fresh gpg-agent..."
+    gpg-agent --daemon --log-file "$HOME/.gnupg/gpg-agent.log"
+}
+
+wait_for_gpg_socket() {
+    echo "Waiting for gpg-agent socket..."
+    for _ in {1..10}; do
+        if [[ -S "$HOME/.gnupg/S.gpg-agent" ]]; then
+            echo "gpg-agent socket is ready."
+            return 0
+        fi
+        sleep 0.5
+    done
+    echo "Timed out waiting for gpg-agent socket! Check ~/.gnupg/gpg-agent.log" >&2
+}
+
+import_gpg_keys() {
+    echo "Importing GPG keys from 1Password..."
+    op read 'op://GitHub Codespaces/o6wvojrpbnddcjjml6ic3co6zi/y2rhxpw5aj63kbixprolab27ye' | gpg --batch --yes --import
+}
+
+clone_dotfiles() {
+    local dotfiles_dir="$HOME/.dotfiles"
+    if [[ -n "${DOTFILES_GIT_URL:-}" ]]; then
+        echo "Cloning or updating dotfiles from $DOTFILES_GIT_URL to $dotfiles_dir"
+        if [[ -d "$dotfiles_dir/.git" ]]; then
+            echo "Dotfiles repo already exists, pulling latest..."
+            git -C "$dotfiles_dir" pull
+        else
+            git clone "$DOTFILES_GIT_URL" "$dotfiles_dir"
+        fi
+        local bootstrap_script="$dotfiles_dir/bootstrap"
+        if [[ -x "$bootstrap_script" ]]; then
+            echo "Running dotfiles bootstrap..."
+            "$bootstrap_script"
+        else
+            echo "Dotfiles bootstrap not found or not executable."
+        fi
+    fi
+}
+
+setup_op_completion() {
+    if command -v op &>/dev/null; then
+        if ! grep -qF "source <(op completion bash)" "$HOME/.bashrc"; then
+            echo "source <(op completion bash)" >>"$HOME/.bashrc"
+        fi
+    fi
+}
+
+main() {
+    kill_gpg_agent
+    cleanup_gpg_sockets
+    start_gpg_agent
+    wait_for_gpg_socket
+    import_gpg_keys
+    setup_op_completion
+    clone_dotfiles
+}
+
+main

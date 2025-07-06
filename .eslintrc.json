@@ -1,0 +1,25 @@
+{
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "standard",
+        "prettier"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2021,
+        "sourceType": "module"
+    },
+    "rules": {
+        "eol-last": [
+            "error",
+            "always"
+        ],
+        "indent": [
+            "error",
+            4
+        ],
+        "no-extra-semi": "error"
+    }
+}

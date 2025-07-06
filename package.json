@@ -1,0 +1,34 @@
+{
+  "author": "",
+  "bin": {
+    "crosskeys": "./src/index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.53.2",
+    "yargs": "^18.0.0"
+  },
+  "description": "A CLI tool for ServiceNow.",
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.6.0",
+    "prettier": "^3.6.2"
+  },
+  "keywords": [
+    "cli",
+    "crosskeys"
+  ],
+  "license": "GPL-3.0-or-later",
+  "main": "index.js",
+  "name": "crosskeys",
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "eslint . --fix"
+  },
+  "type": "module",
+  "version": "1.0.0"
+}
